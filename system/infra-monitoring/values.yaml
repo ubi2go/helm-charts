@@ -6,6 +6,7 @@ owner-info:
     - Tommy Sauer
     - Richard Tief
     - Max Mustermann
+    - Tom Tiffany
   helm-chart-url: https://github.com/sapcc/helm-charts/tree/master/system/infra-monitoring
 
 global:
