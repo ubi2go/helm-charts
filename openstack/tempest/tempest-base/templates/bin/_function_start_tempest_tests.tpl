@@ -20,7 +20,6 @@ function start_tempest_tests {
   cp /{{ .Chart.Name }}-etc/tempest_extra_options /tmp
   sed -i "s/CHANGE_ME_IMAGE_REF/$(echo $IMAGE_REF)/g" /tmp/tempest_extra_options
   sed -i "s/CHANGEMEIMAGEREFALT/$(echo $IMAGE_REF_ALT)/g" /tmp/tempest_extra_options
-  export
   echo -e "\n === CONFIGURING RALLY & TEMPEST === \n"
 
   # init exit code vars
@@ -41,7 +40,8 @@ function start_tempest_tests {
     pip install git+https://github.com/sapcc/barbican-tempest-plugin.git@ccloud
   fi
   # check if we can reach openstack endpoints
-
+  export
+  
   rally deployment check
   RALLY_EXIT_CODE=$(($RALLY_EXIT_CODE + $?))
   # create tempest verifier fetched from our repo
