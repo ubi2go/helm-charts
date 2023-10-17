@@ -17,7 +17,6 @@ function start_tempest_tests {
   export OS_PROJECT_NAME={{ default "neutron-tempest-admin1" (index .Values (print .Chart.Name | replace "-" "_")).tempest.admin_project_name | quote }}
   export IMAGE_REF={{ default "ubuntu-18.04-amd64-vmware" (index .Values (print .Chart.Name | replace "-" "_")).tempest.image_ref | include "tempest-base._image_ref" }}
   export IMAGE_REF_ALT={{ default "ubuntu-20.04-amd64-vmware" (index .Values (print .Chart.Name | replace "-" "_")).tempest.image_ref_alt | include "tempest-base._image_ref" }}
-  export OS_AUTH_URL=https://identity-3.qa-de-1.cloud.sap/v3
   cp /{{ .Chart.Name }}-etc/tempest_extra_options /tmp
   sed -i "s/CHANGE_ME_IMAGE_REF/$(echo $IMAGE_REF)/g" /tmp/tempest_extra_options
   sed -i "s/CHANGEMEIMAGEREFALT/$(echo $IMAGE_REF_ALT)/g" /tmp/tempest_extra_options
@@ -30,7 +29,8 @@ function start_tempest_tests {
   # ensure rally db is present
   rally db ensure
   RALLY_EXIT_CODE=$(($RALLY_EXIT_CODE + $?))
-  env
+  export
+  export OS_AUTH_URL=https://identity-3.qa-de-1.cloud.sap/v3
   # configure deployment for current region with existing users
   rally deployment create --file /{{ .Chart.Name }}-etc/tempest_deployment_config.json --name tempest_deployment
   RALLY_EXIT_CODE=$(($RALLY_EXIT_CODE + $?))
