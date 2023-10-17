@@ -30,7 +30,7 @@ function start_tempest_tests {
   # ensure rally db is present
   rally db ensure
   RALLY_EXIT_CODE=$(($RALLY_EXIT_CODE + $?))
-
+  env
   # configure deployment for current region with existing users
   rally deployment create --file /{{ .Chart.Name }}-etc/tempest_deployment_config.json --name tempest_deployment
   RALLY_EXIT_CODE=$(($RALLY_EXIT_CODE + $?))
