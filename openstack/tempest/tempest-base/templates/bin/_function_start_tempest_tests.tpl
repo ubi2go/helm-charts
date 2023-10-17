@@ -17,6 +17,7 @@ function start_tempest_tests {
   export OS_PROJECT_NAME={{ default "neutron-tempest-admin1" (index .Values (print .Chart.Name | replace "-" "_")).tempest.admin_project_name | quote }}
   export IMAGE_REF={{ default "ubuntu-18.04-amd64-vmware" (index .Values (print .Chart.Name | replace "-" "_")).tempest.image_ref | include "tempest-base._image_ref" }}
   export IMAGE_REF_ALT={{ default "ubuntu-20.04-amd64-vmware" (index .Values (print .Chart.Name | replace "-" "_")).tempest.image_ref_alt | include "tempest-base._image_ref" }}
+  export OS_AUTH_URL=https://identity-3.qa-de-1.cloud.sap/v3
   cp /{{ .Chart.Name }}-etc/tempest_extra_options /tmp
   sed -i "s/CHANGE_ME_IMAGE_REF/$(echo $IMAGE_REF)/g" /tmp/tempest_extra_options
   sed -i "s/CHANGEMEIMAGEREFALT/$(echo $IMAGE_REF_ALT)/g" /tmp/tempest_extra_options
@@ -40,8 +41,6 @@ function start_tempest_tests {
     pip install git+https://github.com/sapcc/barbican-tempest-plugin.git@ccloud
   fi
   # check if we can reach openstack endpoints
-  export
-  env
   rally deployment check
   RALLY_EXIT_CODE=$(($RALLY_EXIT_CODE + $?))
   # create tempest verifier fetched from our repo
