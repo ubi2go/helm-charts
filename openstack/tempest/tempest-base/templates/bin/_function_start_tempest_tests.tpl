@@ -39,7 +39,7 @@ function start_tempest_tests {
   if [[ $SERVICE_NAME == "octavia-tempest" ]]; then
     pip install git+https://github.com/sapcc/barbican-tempest-plugin.git@ccloud
   fi
-
+  env
   export
   export OS_AUTH_URL=https://identity-3.qa-de-1.cloud.sap/v3
   # check if we can reach openstack endpoints
