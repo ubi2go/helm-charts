@@ -41,7 +41,7 @@ function start_tempest_tests {
   fi
   # check if we can reach openstack endpoints
   export
-  
+  env
   rally deployment check
   RALLY_EXIT_CODE=$(($RALLY_EXIT_CODE + $?))
   # create tempest verifier fetched from our repo
