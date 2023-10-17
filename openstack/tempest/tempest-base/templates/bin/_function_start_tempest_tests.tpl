@@ -15,6 +15,7 @@ function start_tempest_tests {
   export OS_USERNAME={{ default "neutron-tempestadmin1" (index .Values (print .Chart.Name | replace "-" "_")).tempest.admin_name | quote }}
   export OS_TENANT_NAME={{ default "neutron-tempest-admin1" (index .Values (print .Chart.Name | replace "-" "_")).tempest.admin_project_name | quote }}
   export OS_PROJECT_NAME={{ default "neutron-tempest-admin1" (index .Values (print .Chart.Name | replace "-" "_")).tempest.admin_project_name | quote }}
+  export OS_PROJECT_DOMAIN_NAME=tempest
   export IMAGE_REF={{ default "ubuntu-18.04-amd64-vmware" (index .Values (print .Chart.Name | replace "-" "_")).tempest.image_ref | include "tempest-base._image_ref" }}
   export IMAGE_REF_ALT={{ default "ubuntu-20.04-amd64-vmware" (index .Values (print .Chart.Name | replace "-" "_")).tempest.image_ref_alt | include "tempest-base._image_ref" }}
   cp /{{ .Chart.Name }}-etc/tempest_extra_options /tmp
@@ -41,6 +42,9 @@ function start_tempest_tests {
     pip install git+https://github.com/sapcc/barbican-tempest-plugin.git@ccloud
   fi
   # check if we can reach openstack endpoints
+  pip show python-glanceclient
+  pip install python-glanceclient==4.4.0
+  pip show python-glanceclient
 
   rally deployment check
   RALLY_EXIT_CODE=$(($RALLY_EXIT_CODE + $?))
