@@ -29,8 +29,7 @@ function start_tempest_tests {
   # ensure rally db is present
   rally db ensure
   RALLY_EXIT_CODE=$(($RALLY_EXIT_CODE + $?))
-  export
-  export OS_AUTH_URL=https://identity-3.qa-de-1.cloud.sap/v3
+
   # configure deployment for current region with existing users
   rally deployment create --file /{{ .Chart.Name }}-etc/tempest_deployment_config.json --name tempest_deployment
   RALLY_EXIT_CODE=$(($RALLY_EXIT_CODE + $?))
@@ -40,6 +39,9 @@ function start_tempest_tests {
   if [[ $SERVICE_NAME == "octavia-tempest" ]]; then
     pip install git+https://github.com/sapcc/barbican-tempest-plugin.git@ccloud
   fi
+
+  export
+  export OS_AUTH_URL=https://identity-3.qa-de-1.cloud.sap/v3
   # check if we can reach openstack endpoints
   rally deployment check
   RALLY_EXIT_CODE=$(($RALLY_EXIT_CODE + $?))
