@@ -33,7 +33,7 @@ spec:
         - name: OS_IDENTITY_API_VERSION
           value: "3"
         - name: OS_AUTH_URL
-          value: "https://identity-3.qa-de-1.cloud.sap/v3"
+          value: "http://{{ if .Values.global.clusterDomain }}keystone.{{.Release.Namespace}}.svc.{{ required "Missing clusterDomain value!" .Values.global.clusterDomain}}{{ else }}keystone.{{.Release.Namespace}}.svc.kubernetes.{{required "Missing region value!" .Values.global.region}}.{{ required "Missing tld value!" .Values.global.tld}}{{end}}:5000/v3"
       resources:
         requests:
           memory: "1024Mi"

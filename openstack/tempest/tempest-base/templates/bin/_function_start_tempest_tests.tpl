@@ -20,6 +20,7 @@ function start_tempest_tests {
   cp /{{ .Chart.Name }}-etc/tempest_extra_options /tmp
   sed -i "s/CHANGE_ME_IMAGE_REF/$(echo $IMAGE_REF)/g" /tmp/tempest_extra_options
   sed -i "s/CHANGEMEIMAGEREFALT/$(echo $IMAGE_REF_ALT)/g" /tmp/tempest_extra_options
+
   echo -e "\n === CONFIGURING RALLY & TEMPEST === \n"
 
   # init exit code vars
@@ -39,16 +40,14 @@ function start_tempest_tests {
   if [[ $SERVICE_NAME == "octavia-tempest" ]]; then
     pip install git+https://github.com/sapcc/barbican-tempest-plugin.git@ccloud
   fi
-  env
-  export
-  export OS_AUTH_URL=https://identity-3.qa-de-1.cloud.sap/v3
   # check if we can reach openstack endpoints
+
   rally deployment check
   RALLY_EXIT_CODE=$(($RALLY_EXIT_CODE + $?))
   # create tempest verifier fetched from our repo
   rally --debug verify create-verifier --type tempest --name {{ .Chart.Name }}-verifier --system-wide --source https://github.com/sapcc/tempest --version {{ default "ccloud-python3" .Values.tempest_branch }}
   RALLY_EXIT_CODE=$(($RALLY_EXIT_CODE + $?))
-
+  sleep 3600
   # configure tempest verifier taking into account the auth section values provided in tempest_extra_options file
   # use config file from PRE_CONFIG STEP from /tmp directory
   rally --debug verify configure-verifier --extend /tmp/tempest_extra_options

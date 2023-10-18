@@ -16,7 +16,7 @@ admin_domain_name = tempest
 admin_domain_scope = True
 
 [identity]
-uri_v3 = https://identity-3.qa-de-1.cloud.sap/v3
+uri_v3 = http://{{ if .Values.global.clusterDomain }}keystone.{{.Release.Namespace}}.svc.{{.Values.global.clusterDomain}}{{ else }}keystone.{{.Release.Namespace}}.svc.kubernetes.{{.Values.global.region}}.{{.Values.global.tld}}{{end}}:5000/v3
 endpoint_type = internal
 v3_endpoint_type = internal
 region = {{ .Values.global.region }}
