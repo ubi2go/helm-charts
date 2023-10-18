@@ -47,7 +47,7 @@ function start_tempest_tests {
   # create tempest verifier fetched from our repo
   rally --debug verify create-verifier --type tempest --name {{ .Chart.Name }}-verifier --system-wide --source https://github.com/sapcc/tempest --version {{ default "ccloud-python3" .Values.tempest_branch }}
   RALLY_EXIT_CODE=$(($RALLY_EXIT_CODE + $?))
-  sleep 3600
+  sleep 1800
   # configure tempest verifier taking into account the auth section values provided in tempest_extra_options file
   # use config file from PRE_CONFIG STEP from /tmp directory
   rally --debug verify configure-verifier --extend /tmp/tempest_extra_options
