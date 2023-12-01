@@ -10,12 +10,12 @@ dependencies:
   version: 0.18.2
 - name: utils
   repository: https://charts.eu-de-2.cloud.sap
-  version: 0.12.1
+  version: 0.12.3
 - name: owner-info
   repository: https://charts.eu-de-2.cloud.sap
   version: 0.2.0
 - name: mysql_metrics
   repository: https://charts.eu-de-2.cloud.sap
   version: 0.2.7
-digest: sha256:7830fc2ea7e923b4fa2c9473b1e5632dc0b54760c9cd407b361746d8ea2f1120
-generated: "2023-11-16T13:03:46.262145-05:00"
+digest: sha256:8d2a85acce32d281556c3cb26a6b2cd8edfe7fb02cc1b6e5d622cc916ea68f18
+generated: "2023-12-01T13:37:39.727869-05:00"
