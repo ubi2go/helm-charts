@@ -44,6 +44,9 @@ spec:
         - name: support-config
           configMap:
             name: support-config
+        - name: global-notifications
+          configMap:
+            name: global-notifications
       # The preStop hook below sleeps 30 seconds, extend the gracePeriod accordingly
       terminationGracePeriodSeconds: 60
       initContainers:
@@ -63,6 +66,10 @@ spec:
           volumeMounts:
             - name: support-config
               mountPath: '/home/app/config/support'
+              readOnly: true
+          volumeMounts:
+            - name: global-notifications
+              mountPath: '/home/app/global_notifications/'
               readOnly: true
           env:
 {{ include (print .Template.BasePath "/_env.tpl") . | indent 12 }}
