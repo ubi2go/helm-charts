@@ -44,25 +44,6 @@ spec:
     spec:
       {{ include "utils.proxysql.pod_settings" . | indent 6 }}
       {{- tuple . (dict "name" "glance") | include "utils.topology.constraints" | indent 6 }}
-      initContainers:
-      {{- tuple . (dict "jobs" (tuple . "migration-job" | include "job_name") "service" (print .Release.Name "-mariadb," .Release.Name "-memcached")) | include "utils.snippets.kubernetes_entrypoint_init_container" | indent 6 }}
-      {{- if .Values.file.persistence.enabled }}
-      - name: permissions
-        securityContext:
-          runAsUser: 0
-        image: {{ required ".Values.global.registry is missing" .Values.global.registry }}/loci-glance:{{ required "Please set glance.imageVersion or similar" .Values.imageVersion }}
-        imagePullPolicy: IfNotPresent
-        volumeMounts:
-        - mountPath: /glance_store
-          name: image-store
-        command:
-        - dumb-init
-        - bash
-        args:
-        - -xc
-        - |
-          chown -R glance:glance /glance_store
-      {{- end }}
 {{- if .Values.glance_nanny.db_purge.enabled }}
       containers:
       - name: db-consistency-and-purge
@@ -101,9 +82,6 @@ spec:
             cpu: {{ .Values.api.resources.requests.cpu | quote }}
             memory: {{ .Values.api.resources.requests.memory | quote }}
         {{- end }}
-        ports:
-        - name: api
-          containerPort: {{.Values.api_port_internal}}
         volumeMounts:
         - name: glance-scripts
           mountPath: /scripts/glance-db-consistency-and-purge.sh
@@ -113,12 +91,6 @@ spec:
           mountPath: /etc/glance/glance-api.conf
           subPath: glance-api.conf
           readOnly: true
-        {{- if not .Values.swift.multi_tenant }}
-        - name: glance-etc
-          mountPath: /etc/glance/swift-store.conf
-          subPath: swift-store.conf
-          readOnly: true
-        {{- end }}
         - name: glance-etc
           mountPath: /etc/glance/logging.ini
           subPath: logging.ini
