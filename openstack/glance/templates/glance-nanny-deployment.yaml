@@ -71,31 +71,20 @@ spec:
         lifecycle:
           preStop:
             {{- include "utils.snippets.pre_stop_graceful_shutdown" . | indent 12 }}
-        livenessProbe:
-          httpGet:
-            path: /
-            port: {{.Values.api_port_internal}}
-          initialDelaySeconds: 60
-          timeoutSeconds: 10
-          periodSeconds: 60
-          failureThreshold: 15
-        readinessProbe:
-          httpGet:
-            path: /healthcheck
-            port: {{.Values.api_port_internal}}
-          initialDelaySeconds: 5
-          timeoutSeconds: 4
-          periodSeconds: 5
-          failureThreshold: 2
         command:
         - dumb-init
         - kubernetes-entrypoint
         env:
         - name: COMMAND
           value: "{{ if not .Values.glance_nanny.debug }}/bin/bash /scripts/glance-db-consistency-and-purge.sh{{ else }}sleep inf{{ end }}"
-        - name: DEBUG_CONTAINER
-          value: "false"
-        {{- include "utils.trust_bundle.env" . | indent 8 }}
+        - name: GLANCE_DB_PURGE_ENABLED
+          value: {{ .Values.glance_nanny.db_purge.enabled | quote }}
+        - name: GLANCE_DB_PURGE_OLDER_THAN
+          value: {{ .Values.glance_nanny.db_purge.older_than | quote }}
+        - name: GLANCE_DB_PURGE_MAX_NUMBER
+          value: {{ .Values.glance_nanny.db_purge.max_number | quote }}
+        - name: GLANCE_NANNY_INTERVAL
+          value: {{ .Values.glance_nanny.interval | quote }}
         {{- if .Values.sentry.enabled }}
         - name: SENTRY_DSN
           valueFrom:
@@ -120,10 +109,6 @@ spec:
           mountPath: /scripts/glance-db-consistency-and-purge.sh
           subPath: glance-db-consistency-and-purge.sh
           readOnly: true
-        - name: swift-buffer
-          mountPath: /upload
-        - name: etcglance
-          mountPath: /etc/glance
         - name: glance-etc
           mountPath: /etc/glance/glance-api.conf
           subPath: glance-api.conf
@@ -135,37 +120,16 @@ spec:
           readOnly: true
         {{- end }}
         - name: glance-etc
-          mountPath: /etc/glance/policy.yaml
-          subPath: policy.yaml
-          readOnly: true
-        - name: glance-etc
-          mountPath: /etc/glance/glance-api-paste.ini
-          subPath: glance-api-paste.ini
-          readOnly: true
-        - name: glance-etc
           mountPath: /etc/glance/logging.ini
           subPath: logging.ini
           readOnly: true
         - name: glance-etc-confd
           mountPath: /etc/glance/glance.conf.d
           readOnly: true
-        - mountPath: /glance_store
-          name: image-store
         {{- include "utils.proxysql.volume_mount" . | indent 8 }}
         {{- include "utils.trust_bundle.volume_mount" . | indent 8 }}
       {{- tuple . (add .Values.rpc_workers .Values.workers) | include "utils.proxysql.container" | indent 6 }}
       volumes:
-      - name: etcglance
-        emptyDir: {}
-      - name: swift-buffer
-        emptyDir: {}
-      - name: image-store
-      {{- if .Values.file.persistence.enabled }}
-        persistentVolumeClaim:
-          claimName: {{ if .Values.file.persistence.existingClaim }}{{ .Values.file.persistence.existingClaim }}{{- else }}{{ .Release.Name }}-pvc{{- end }}
-      {{- else }}
-        emptyDir: {}
-      {{- end }}
       - name: glance-etc
         configMap:
           name: glance-etc
