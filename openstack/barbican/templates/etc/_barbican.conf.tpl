@@ -81,3 +81,13 @@ secret_store_plugin = store_crypto
 crypto_plugin = p11_crypto
 global_default = True
 {{- end }}
+
+{{- if .Values.kmip.enabled }}
+[secretstore]
+enable_multiple_secret_stores = True
+stores_lookup_suffix = software, pkcs11, kmip_crypto
+namespace = barbican.secretstore.plugin
+
+[kmip_plugin]
+global_default = True
+{{- end }}
