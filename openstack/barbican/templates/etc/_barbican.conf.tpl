@@ -85,9 +85,14 @@ global_default = True
 {{- if .Values.kmip.enabled }}
 [secretstore]
 enable_multiple_secret_stores = True
-stores_lookup_suffix = software, pkcs11, kmip_crypto
+stores_lookup_suffix = software, kmip
 namespace = barbican.secretstore.plugin
 
-[kmip_plugin]
+[secretstore:software]
+secret_store_plugin = store_crypto
+crypto_plugin = simple_crypto
+
+[secretstore:kmip]
+secret_store_plugin = kmip_plugin
 global_default = True
 {{- end }}

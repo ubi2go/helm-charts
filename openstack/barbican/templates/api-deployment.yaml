@@ -130,12 +130,12 @@ spec:
               subPath: ratelimit.yaml
               readOnly: true
             {{- end }}
-        {{- if .Values.hsm.enabled }}
-            - name: luna
-              mountPath: /thales/
             {{- include "utils.proxysql.volume_mount" . | indent 12 }}
             {{- include "utils.trust_bundle.volume_mount" . | indent 12 }}
         {{- include "utils.proxysql.container" . | indent 8 }}
+        {{- if .Values.hsm.enabled }}
+            - name: luna
+              mountPath: /thales/
         - name: lunaclient
           image: {{required ".Values.global.registry is missing" .Values.global.registry }}/loci-barbican:{{required "Values.hsm.luna.image is missing" .Values.hsm.luna.image }}
           imagePullPolicy: IfNotPresent
