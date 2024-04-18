@@ -4,6 +4,9 @@
   project_name: 'admin'
   types:
    - admin
+  roles:
+   - admin
+   - primary
 - username: 'tempestuser1'
   tenant_name: 'tempest1'
   password: {{ .Values.tempestAdminPassword | quote }}
