@@ -34,8 +34,6 @@ owner-info:
     - Sven Rosenzweig
   helm-chart-url: https://github.com/sapcc/helm-charts/tree/master/openstack/neutron
 
-sftp:
-  server_key:
 
 pod:
   replicas:
@@ -277,6 +275,7 @@ sftp:
   enabled: false
   externalIPs: []
   user: db_backup
+  server_key:
   logins:
     db_backup: nsx-t-backup
     vcsa_backup: vcsa-backups
