@@ -20,6 +20,7 @@ slot_id = {{ .Values.lunaclient.conn.slot_id }}
 {{- end }}
 
 {{- if .Values.kmip.enabled }}
+[kmip_plugin]
 username = {{ .Values.kmip.username }}
 password = {{ .Values.kmip.password }}
 host = {{ .Values.kmip.host }}
