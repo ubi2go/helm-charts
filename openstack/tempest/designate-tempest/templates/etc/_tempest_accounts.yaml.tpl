@@ -7,16 +7,20 @@
   roles:
    - admin
    - primary
-   - dns_admin
+   - cloud_dns_admin
 - username: 'tempestuser1'
   tenant_name: 'tempest1'
   password: {{ .Values.tempestAdminPassword | quote }}
   project_name: 'tempest1'
   types:
    - primary
+  roles:
+   - cloud_dns_admin
 - username: 'tempestuser2'
   tenant_name: 'tempest2'
   password: {{ .Values.tempestAdminPassword | quote }}
   project_name: 'tempest2'
   types:
     - primary
+  roles:
+   - cloud_dns_admin
