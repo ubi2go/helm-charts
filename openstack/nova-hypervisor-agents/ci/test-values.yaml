@@ -1,0 +1,19 @@
+global:
+  nova_service_password: topSecret
+  dockerHubMirror: myRegistry/dockerhub
+  registry: myRegistry
+
+imageVersion: latest
+
+defaults:
+  hypervisor:
+    kvm:
+      pod:
+        tolerations:
+          hypervisorNoSchedule:
+            key: "species"
+            operator: "Equal"
+            value: "hypervisor"
+            effect: "NoSchedule"
+        nodeSelector:
+          species: hypervisor
