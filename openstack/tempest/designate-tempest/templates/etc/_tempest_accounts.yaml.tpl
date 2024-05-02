@@ -4,6 +4,7 @@
   project_name: 'admin'
   types:
    - admin
+   - cloud_dns_admin
   roles:
    - admin
    - primary
@@ -14,6 +15,7 @@
   project_name: 'tempest1'
   types:
    - primary
+   - cloud_dns_admin
   roles:
    - cloud_dns_admin
 - username: 'tempestuser2'
@@ -22,5 +24,6 @@
   project_name: 'tempest2'
   types:
     - primary
+   - cloud_dns_admin
   roles:
    - cloud_dns_admin
