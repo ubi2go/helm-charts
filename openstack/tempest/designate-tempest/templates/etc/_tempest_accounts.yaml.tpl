@@ -24,6 +24,6 @@
   project_name: 'tempest2'
   types:
     - primary
-   - cloud_dns_admin
+    - cloud_dns_admin
   roles:
    - cloud_dns_admin
