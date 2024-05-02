@@ -47,16 +47,6 @@ spec:
         - {{ default "rabbitmq" $.Values.rabbitmq.nameOverride | printf "nova-%s" | trunc 63 | replace "_" "-" | trimSuffix "-" }}
       {{- end }}
       initContainers:
-      - name: ensure-hugepages
-        image: {{ required ".Values.global.registry is missing" .Values.global.registry }}/{{ .Values.imageName }}:{{ .Values.imageVersion | required "Please set imageVersion similar" }}
-        command:
-        - bash
-        - -c
-        - |
-          RESERVED_MEMORY_MB=32768  # 32GiB should be enough for anyone (TM)
-          NR_HUGEPAGES=$(grep MemTotal /proc/meminfo | awk "{print (((\$2 / 1024) - $RESERVED_MEMORY_MB) / 2)}")
-          echo "hugepages=$NR_HUGEPAGES"
-          sysctl -w vm.nr_hugepages=$NR_HUGEPAGES
 {{- if not .Values.hypervisor_on_host }}
       - name: load-kernel-mod
         image: {{ required ".Values.global.dockerHubMirror is missing" .Values.global.dockerHubMirror }}/library/busybox
