@@ -19,12 +19,6 @@ dependencies:
     version: 0.1.0
     condition: blackbox_exporter.enabled
 
-  - name: vasa-exporter
-    alias: vasa_exporter
-    repository: file://vendor/vasa-exporter
-    version: 1.0.0
-    condition: vasa_exporter.enabled
-
   - name: px-exporter
     alias: px_exporter
     repository: file://vendor/px-exporter
