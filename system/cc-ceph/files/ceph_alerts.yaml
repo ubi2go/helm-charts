@@ -286,8 +286,8 @@
             summary: "PGs are not balanced across OSDs"
           expr: |
             abs(
-             1 - 
-             ceph_osd_numpg * on(ceph_daemon) group_left(hostname) ceph_osd_metadata{hostname=~"node[0-9]+-ap.*"} / on (job) group_left() 
+             1 -
+             ceph_osd_numpg * on(ceph_daemon) group_left(hostname) ceph_osd_metadata{hostname=~"node[0-9]+-ap.*"} / on (job) group_left()
              avg by (job) (ceph_osd_numpg * on(ceph_daemon) group_left() ceph_osd_metadata{hostname=~"node[0-9]+-ap.*"})
             ) > 0.30
           for: "5m"
@@ -303,13 +303,169 @@
             summary: "PGs are not balanced across OSDs"
           expr: |
             abs(
-             1 - 
-             ceph_osd_numpg * on(ceph_daemon) group_left(hostname) ceph_osd_metadata{hostname=~"node[0-9]+-st.*"} / on (job) group_left() 
+             1 -
+             ceph_osd_numpg * on(ceph_daemon) group_left(hostname) ceph_osd_metadata{hostname=~"node[0-9]+-st.*"} / on (job) group_left()
              avg by (job) (ceph_osd_numpg * on(ceph_daemon) group_left() ceph_osd_metadata{hostname=~"node[0-9]+-st.*"})
             ) > 0.30
           for: "5m"
           labels:
-            oid: "1.3.6.1.4.1.50495.1.2.1.4.5"
+            oid: "1.3.6.1.4.1.50495.1.2.1.4.6"
+            severity: "warning"
+            type: "ceph_default"
+            service: ceph
+            #support_group: storage
+       - alert: "CephPGRemapped"
+          annotations:
+            description: "The placement group is temporarily mapped to a different set of OSDs from what CRUSH specified. Root cause could be assignment of a new crush_rule to a existing pool"
+            documentation: "https://docs.ceph.com/en/latest/rados/operations/health-checks#pg-not-deep-scrubbed"
+            summary: "The placement group is temporarily mapped to a different set of OSDs from what CRUSH specified."
+          expr: "ceph_pool_metadata * on(pool_id,instance) group_left() (ceph_pg_remapped) > 0"
+          for: "15m"
+          labels:
+            severity: "warning"
+            type: "ceph_default"
+            service: ceph
+            #support_group: storage
+        - alert: "CephPGCreating"
+          annotations:
+            description: "Ceph is still creating the placement group. This should only happen during maintenance."
+            documentation: "https://docs.ceph.com/en/latest/rados/operations/pg-states/"
+            summary: "Ceph is still creating the placement group."
+          expr: "ceph_pool_metadata * on(pool_id,instance) group_left() (ceph_pg_creating) > 0"
+          for: "15m"
+          labels:
+            severity: "warning"
+            type: "ceph_default"
+            service: ceph
+            #support_group: storage
+        - alert: "CephPGActivating"
+          annotations:
+            description: "The placement group is peered but not yet active.. This should only happen during maintenance."
+            documentation: "https://docs.ceph.com/en/latest/rados/operations/pg-states/"
+            summary: "The placement group is peered but not yet active."
+          expr: "ceph_pool_metadata * on(pool_id,instance) group_left() (ceph_pg_activating) > 0"
+          for: "15m"
+          labels:
+            severity: "warning"
+            type: "ceph_default"
+            service: ceph
+            #support_group: storage
+        - alert: "CephPGFailedToRepair"
+          annotations:
+            description: "Ceph is checking the placement group and repairing any inconsistencies it finds (if possible)."
+            documentation: "https://docs.ceph.com/en/latest/rados/operations/pg-states/"
+            summary: "Ceph is checking the placement group and repairing any inconsistencies it finds (if possible)."
+          expr: "ceph_pool_metadata * on(pool_id,instance) group_left() (ceph_pg_failed_repair) > 0"
+          for: "15m"
+          labels:
+            severity: "warning"
+            type: "ceph_default"
+            service: ceph
+            #support_group: storage
+        - alert: "CephPGIncomplete"
+          annotations:
+            description: "Ceph detects that a placement group is missing information about writes that may have occurred, or does not have any healthy copies. If you see this state, try to start any failed OSDs that may contain the needed information. In the case of an erasure coded pool temporarily reducing min_size may allow recovery."
+            documentation: "https://docs.ceph.com/en/latest/rados/operations/pg-states/"
+            summary: "Ceph is checking the placement group and repairing any inconsistencies it finds (if possible)."
+          expr: "ceph_pool_metadata * on(pool_id,instance) group_left() (ceph_pg_incomplete) > 0"
+          for: "15m"
+          labels:
+            severity: "warning"
+            type: "ceph_default"
+            service: ceph
+            #support_group: storage
+        - alert: "CephPGInconsistent"
+          annotations:
+            description: "Ceph detects inconsistencies in the one or more replicas of an object in the placement group (e.g. objects are the wrong size, objects are missing from one replica after recovery finished, etc.)."
+            documentation: "https://docs.ceph.com/en/latest/rados/operations/pg-states/"
+            summary: "Ceph detects inconsistencies in the one or more replicas of an object in the placement group (e.g. objects are the wrong size, objects are missing from one replica after recovery finished, etc.)."
+          expr: "ceph_pool_metadata * on(pool_id,instance) group_left() (ceph_pg_inconsistent) > 0"
+          for: "15m"
+          labels:
+            severity: "warning"
+            type: "ceph_default"
+            service: ceph
+            #support_group: storage
+        - alert: "CephPGUndersized"
+          annotations:
+            description: "The placement group has fewer copies than the configured pool replication level."
+            documentation: "https://docs.ceph.com/en/latest/rados/operations/pg-states/"
+            summary: "The placement group has fewer copies than the configured pool replication level."
+          expr: "ceph_pool_metadata * on(pool_id,instance) group_left() (ceph_pg_undersized) > 0"
+          for: "15m"
+          labels:
+            severity: "warning"
+            type: "ceph_default"
+            service: ceph
+            #support_group: storage
+        - alert: "CephPGUnknown"
+          annotations:
+            description: "The ceph-mgr hasn’t yet received any information about the PG’s state from an OSD since mgr started up."
+            documentation: "https://docs.ceph.com/en/latest/rados/operations/pg-states/"
+            summary: "The ceph-mgr hasn’t yet received any information about the PG’s state from an OSD since mgr started up."
+          expr: "ceph_pool_metadata * on(pool_id,instance) group_left() (ceph_pg_unknown) > 0"
+          for: "15m"
+          labels:
+            severity: "warning"
+            type: "ceph_default"
+            service: ceph
+            #support_group: storage
+        - alert: "CephPGStale"
+          annotations:
+            description: "The placement group is in an unknown state - the monitors have not received an update for it since the placement group mapping changed."
+            documentation: "https://docs.ceph.com/en/latest/rados/operations/pg-states/"
+            summary: "The placement group is in an unknown state - the monitors have not received an update for it since the placement group mapping changed."
+          expr: "ceph_pool_metadata * on(pool_id,instance) group_left() (ceph_pg_stale) > 0"
+          for: "15m"
+          labels:
+            severity: "warning"
+            type: "ceph_default"
+            service: ceph
+            #support_group: storage
+        - alert: "CephPGWait"
+          annotations:
+            description: "The set of OSDs for this PG has just changed and IO is temporarily paused until the previous interval’s leases expire."
+            documentation: "https://docs.ceph.com/en/latest/rados/operations/pg-states/"
+            summary: "The set of OSDs for this PG has just changed and IO is temporarily paused until the previous interval’s leases expire."
+          expr: "ceph_pool_metadata * on(pool_id,instance) group_left() (ceph_pg_wait) > 0"
+          for: "15m"
+          labels:
+            severity: "warning"
+            type: "ceph_default"
+            service: ceph
+            #support_group: storage
+        - alert: "CephPGLaggy"
+          annotations:
+            description: "A replica is not acknowledging new leases from the primary in a timely fashion; IO is temporarily paused."
+            documentation: "https://docs.ceph.com/en/latest/rados/operations/pg-states/"
+            summary: "A replica is not acknowledging new leases from the primary in a timely fashion; IO is temporarily paused."
+          expr: "ceph_pool_metadata * on(pool_id,instance) group_left() (ceph_pg_laggy) > 0"
+          for: "15m"
+          labels:
+            severity: "warning"
+            type: "ceph_default"
+            service: ceph
+            #support_group: storage
+        - alert: "CephPGPeering"
+          annotations:
+            description: "The placement group is undergoing the peering process"
+            documentation: "https://docs.ceph.com/en/latest/rados/operations/pg-states/"
+            summary: "The placement group is undergoing the peering process."
+          expr: "ceph_pool_metadata * on(pool_id,instance) group_left() (ceph_pg_peering) > 0"
+          for: "15m"
+          labels:
+            severity: "warning"
+            type: "ceph_default"
+            service: ceph
+            #support_group: storage
+        - alert: "CephPGPeered"
+          annotations:
+            description: "The placement group has peered, but cannot serve client IO due to not having enough copies to reach the pool’s configured min_size parameter. Recovery may occur in this state, so the pg may heal up to min_size eventually."
+            documentation: "https://docs.ceph.com/en/latest/rados/operations/pg-states/"
+            summary: "The placement group has peered, but cannot serve client IO due to not having enough copies to reach the pool’s configured min_size parameter. Recovery may occur in this state, so the pg may heal up to min_size eventually."
+          expr: "ceph_pool_metadata * on(pool_id,instance) group_left() (ceph_pg_peered) > 0"
+          for: "15m"
+          labels:
             severity: "warning"
             type: "ceph_default"
             service: ceph
@@ -628,6 +784,17 @@
             summary: "Free space in a pool is too low for recovery/backfill"
           expr: "ceph_health_detail{name=\"POOL_BACKFILLFULL\"} > 0"
           labels:
+            severity: "warning"
+            type: "ceph_default"
+            service: ceph
+            #support_group: storage
+        - alert: "CephPoolGrowthWarning"
+          annotations:
+            description: "Pool '{{ $labels.name }}' will be full in less than 5 days assuming the average fill-up rate of the past 48 hours."
+            summary: "Pool growth rate may soon exceed capacity"
+          expr: "(predict_linear(ceph_pool_percent_used[2d], 3600 * 24 * 5) * on(pool_id, instance, pod) group_right() ceph_pool_metadata) >= 95"
+          labels:
+            oid: "1.3.6.1.4.1.50495.1.2.1.9.2"
             severity: "warning"
             type: "ceph_default"
             service: ceph
